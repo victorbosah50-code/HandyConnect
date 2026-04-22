@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HandyConnect</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>🔧 HandyConnect</h1>
+    <p>Find trusted handymen near you</p>
+  </header>
+
+  <section class="post-job">
+    <h2>Post a Job</h2>
+    <input type="text" id="title" placeholder="Job Title">
+    <input type="text" id="location" placeholder="Location">
+    <textarea id="description" placeholder="Describe the job..."></textarea>
+    <button onclick="postJob()">Post Job</button>
+  </section>
+
+  <section class="jobs">
+    <h2>Available Jobs</h2>
+    <div id="jobList"></div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
