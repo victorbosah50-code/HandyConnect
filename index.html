@@ -2,29 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>HandyConnect</title>
+  <title>HandyConnect Pro</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header>
-    <h1>🔧 HandyConnect</h1>
-    <p>Find trusted handymen near you</p>
-  </header>
+<header>
+  <h1>🔧 HandyConnect Pro</h1>
+  <p>Find the nearest trusted handyman instantly</p>
+</header>
 
-  <section class="post-job">
-    <h2>Post a Job</h2>
-    <input type="text" id="title" placeholder="Job Title">
-    <input type="text" id="location" placeholder="Location">
-    <textarea id="description" placeholder="Describe the job..."></textarea>
-    <button onclick="postJob()">Post Job</button>
-  </section>
+<section class="controls">
+  <button onclick="getUserLocation()">📍 Detect My Location</button>
 
-  <section class="jobs">
-    <h2>Available Jobs</h2>
-    <div id="jobList"></div>
-  </section>
+  <select id="filterSkill" onchange="displayHandymen()">
+    <option value="">All Skills</option>
+    <option value="Plumbing">Plumbing</option>
+    <option value="Electrical">Electrical</option>
+    <option value="Carpentry">Carpentry</option>
+  </select>
+</section>
 
-  <script src="script.js"></script>
+<section>
+  <h2>Available Handymen</h2>
+  <div id="handymanList"></div>
+</section>
+
+<script src="script.js"></script>
 </body>
 </html>
