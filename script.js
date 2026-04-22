@@ -1,67 +1,104 @@
-let jobs = JSON.parse(localStorage.getItem("jobs")) || [];
+let userLocation = null;
 
-function postJob() {
-  const title = document.getElementById("title").value;
-  const location = document.getElementById("location").value;
-  const description = document.getElementById("description").value;
-
-  if (!title || !location || !description) {
-    alert("Please fill all fields");
-    return;
+// Sample handyman database (later replace with real backend)
+let handymen = [
+  {
+    name: "John Fixer",
+    skill: "Plumbing",
+    lat: 50.1109,
+    lon: 8.6821
+  },
+  {
+    name: "Mike Electric",
+    skill: "Electrical",
+    lat: 50.115,
+    lon: 8.68
+  },
+  {
+    name: "Chris Wood",
+    skill: "Carpentry",
+    lat: 50.12,
+    lon: 8.69
   }
+];
 
-  const job = {
-    id: Date.now(),
-    title,
-    location,
-    description,
-    accepted: false
-  };
-
-  jobs.push(job);
-  localStorage.setItem("jobs", JSON.stringify(jobs));
-
-  displayJobs();
-  clearForm();
-}
-
-function displayJobs() {
-  const jobList = document.getElementById("jobList");
-  jobList.innerHTML = "";
-
-  jobs.forEach(job => {
-    const div = document.createElement("div");
-    div.className = "job-card";
-
-    div.innerHTML = `
-      <h3>${job.title}</h3>
-      <p><strong>Location:</strong> ${job.location}</p>
-      <p>${job.description}</p>
-      <p>Status: ${job.accepted ? "✅ Accepted" : "⏳ Open"}</p>
-      ${
-        !job.accepted
-          ? `<button class="accept-btn" onclick="acceptJob(${job.id})">Accept Job</button>`
-          : ""
-      }
-    `;
-
-    jobList.appendChild(div);
+// Get user location
+function getUserLocation() {
+  navigator.geolocation.getCurrentPosition(position => {
+    userLocation = {
+      lat: position.coords.latitude,
+      lon: position.coords.longitude
+    };
+    alert("Location detected!");
+    displayHandymen();
   });
 }
 
-function acceptJob(id) {
-  jobs = jobs.map(job =>
-    job.id === id ? { ...job, accepted: true } : job
-  );
+// Distance formula (Haversine)
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
 
-  localStorage.setItem("jobs", JSON.stringify(jobs));
-  displayJobs();
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function clearForm() {
-  document.getElementById("title").value = "";
-  document.getElementById("location").value = "";
-  document.getElementById("description").value = "";
+// Display handymen
+function displayHandymen() {
+  const list = document.getElementById("handymanList");
+  const filter = document.getElementById("filterSkill").value;
+
+  let filtered = handymen;
+
+  if (filter) {
+    filtered = filtered.filter(h => h.skill === filter);
+  }
+
+  if (userLocation) {
+    filtered.forEach(h => {
+      h.distance = getDistance(
+        userLocation.lat,
+        userLocation.lon,
+        h.lat,
+        h.lon
+      );
+    });
+
+    filtered.sort((a, b) => a.distance - b.distance);
+  }
+
+  list.innerHTML = "";
+
+  filtered.forEach(h => {
+    const div = document.createElement("div");
+    div.className = "handyman-card";
+
+    div.innerHTML = `
+      <h3>${h.name}</h3>
+      <span class="badge">${h.skill}</span>
+      <p>
+        ${
+          userLocation
+            ? "Distance: " + h.distance.toFixed(2) + " km"
+            : "Enable location to see distance"
+        }
+      </p>
+      <button class="hire-btn" onclick="hire('${h.name}')">Hire</button>
+    `;
+
+    list.appendChild(div);
+  });
 }
 
-displayJobs();
+// Hire action
+function hire(name) {
+  alert("You hired " + name);
+}
+
+displayHandymen();
